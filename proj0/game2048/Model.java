@@ -100,7 +100,7 @@ public class Model extends Observable {
         setChanged();
     }
 
-    public boolean tiltColumn(Tile[] column, int col) {
+    public boolean tiltColumn(int col) {
         boolean changed = false;
         Board b = this.board;
         ArrayList<Integer> null_indices = new ArrayList<>();
@@ -118,8 +118,8 @@ public class Model extends Observable {
         }
 
         for (int element = num_indices.size() - 1; element > 0; ) {
-            Tile current = column[num_indices.get(element)];
-            Tile neighbour = column[num_indices.get(element - 1)];
+            Tile current = b.tile(col,num_indices.get(element));
+            Tile neighbour = b.tile(col,num_indices.get(element - 1));
 
             if (current.value() == neighbour.value()) {
                 null_indices.add(neighbour.row());
@@ -128,7 +128,7 @@ public class Model extends Observable {
                 changed = true;
                 num_indices.remove(element - 1);
 
-                element = element - 2;
+                element--;
             }
             element--;
         }
@@ -144,7 +144,7 @@ public class Model extends Observable {
             int max_null_index = Collections.max(null_indices);
             System.out.println("max null: " + max_null_index);
             if (row < max_null_index) {
-                null_indices.add(current.row());
+                null_indices.add(row);
                 null_indices.remove(Integer.valueOf(max_null_index));
                 b.move(col, max_null_index, current);
                 changed = true;
@@ -170,24 +170,25 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
-        board.setViewingPerspective(side);
+
         boolean changed;
         changed = false;
 
         Board b = this.board;
+        b.setViewingPerspective(side);     
         int rows = b.size();
 
         for (int col = 0; col < rows; col++) {
-            Tile[] column = new Tile[rows];
-            for (int row = 0; row < rows; row++) {
-                column[row] = b.tile(col, row);
 
-            }
+
+
+
+
             System.out.println(col);
             System.out.println("_____________________");
-            if (tiltColumn(column, col)) changed = true;
+            if (tiltColumn(col)) changed = true;
              System.out.println("_____________________");
-              System.out.println("_____________________");   
+             System.out.println("_____________________");
 
         }
 
@@ -196,7 +197,7 @@ public class Model extends Observable {
         if (changed) {
             setChanged();
         }
-        board.setViewingPerspective(Side.NORTH);
+        b.setViewingPerspective(Side.NORTH);
         return changed;
     }
 
