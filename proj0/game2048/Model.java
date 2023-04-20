@@ -2,10 +2,14 @@ package game2048;
 
 import java.util.Formatter;
 import java.util.Observable;
+import java.util.ArrayList;
+import java.util.Collections;
 
 
-/** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+/**
+ * The state of a game of 2048.
+ *
+ * @author Colin McNichols
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -86,12 +90,71 @@ public class Model extends Observable {
         setChanged();
     }
 
-    /** Add TILE to the board. There must be no Tile currently at the
-     *  same position. */
+    /**
+     * Add TILE to the board. There must be no Tile currently at the
+     * same position.
+     */
     public void addTile(Tile tile) {
         board.addTile(tile);
         checkGameOver();
         setChanged();
+    }
+
+    public boolean tiltColumn(Tile[] column, int col) {
+        boolean changed = false;
+        Board b = this.board;
+        ArrayList<Integer> null_indices = new ArrayList<>();
+        ArrayList<Integer> num_indices = new ArrayList<>();
+
+        for (int row = 0; row < b.size(); row++) {
+
+            if (b.tile(col, row) == null) {
+                null_indices.add(row);
+
+            } else {
+                num_indices.add(row);
+
+            }
+        }
+
+        for (int element = num_indices.size() - 1; element > 0; ) {
+            Tile current = column[num_indices.get(element)];
+            Tile neighbour = column[num_indices.get(element - 1)];
+
+            if (current.value() == neighbour.value()) {
+                null_indices.add(neighbour.row());
+                b.move(current.col(), current.row(), neighbour);
+                this.score = this.score +b.tile(current.col(), current.row()).value();
+                changed = true;
+                num_indices.remove(element - 1);
+
+                element = element - 2;
+            }
+            element--;
+        }
+        System.out.println(b);        
+
+        for (int element = num_indices.size() - 1; element >= 0; element--) {
+            System.out.println(null_indices);
+            int row = num_indices.get(element);
+            Tile current = b.tile(col, row);
+            System.out.println("Current Value: " + current.value() + "  Current row: "+ row);
+
+            System.out.println(b);           
+            int max_null_index = Collections.max(null_indices);
+            System.out.println("max null: " + max_null_index);
+            if (row < max_null_index) {
+                null_indices.add(current.row());
+                null_indices.remove(Integer.valueOf(max_null_index));
+                b.move(col, max_null_index, current);
+                changed = true;
+            }
+
+        }
+
+        System.out.println(b);
+        return changed;
+
     }
 
     /** Tilt the board toward SIDE. Return true iff this changes the board.
@@ -107,17 +170,33 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
+        board.setViewingPerspective(side);
         boolean changed;
         changed = false;
 
-        // TODO: Modify this.board (and perhaps this.score) to account
-        // for the tilt to the Side SIDE. If the board changed, set the
-        // changed local variable to true.
+        Board b = this.board;
+        int rows = b.size();
+
+        for (int col = 0; col < rows; col++) {
+            Tile[] column = new Tile[rows];
+            for (int row = 0; row < rows; row++) {
+                column[row] = b.tile(col, row);
+
+            }
+            System.out.println(col);
+            System.out.println("_____________________");
+            if (tiltColumn(column, col)) changed = true;
+             System.out.println("_____________________");
+              System.out.println("_____________________");   
+
+        }
+
 
         checkGameOver();
         if (changed) {
             setChanged();
         }
+        board.setViewingPerspective(Side.NORTH);
         return changed;
     }
 
@@ -137,7 +216,13 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        int cols = b.size();
+        int rows = cols;
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
+                if (b.tile(col, row) == null) return true;
+            }
+        }
         return false;
     }
 
@@ -147,7 +232,15 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        int cols = b.size();
+        int rows = cols;
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
+                Tile tile = b.tile(col, row);
+                if (tile == null) continue;
+                if (tile.value() == MAX_PIECE) return true;
+            }
+        }
         return false;
     }
 
@@ -158,9 +251,27 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if (emptySpaceExists(b)) return true;
+
+        int cols = b.size();
+        int rows = cols;
+        for (int col = 0; col < cols; col++) {
+            for (int row = 0; row < rows; row++) {
+                int this_value = b.tile(col, row).value();
+                if (col < cols - 1) {
+                    int right_value = b.tile(col + 1, row).value();
+                    if (right_value == this_value) return true;
+                }
+                if (row < rows - 1) {
+                    int down_value = b.tile(col, row + 1).value();
+                    if (down_value == this_value) return true;
+                }
+            }
+        }
         return false;
     }
+
+
 
 
     @Override
