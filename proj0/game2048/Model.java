@@ -122,9 +122,9 @@ public class Model extends Observable {
             Tile neighbour = b.tile(col,num_indices.get(element - 1));
 
             if (current.value() == neighbour.value()) {
-                null_indices.add(neighbour.row());
-                b.move(current.col(), current.row(), neighbour);
-                this.score = this.score +b.tile(current.col(), current.row()).value();
+                null_indices.add(num_indices.get(element - 1));
+                b.move(col, num_indices.get(element), neighbour);
+                this.score = this.score +b.tile(col, num_indices.get(element)).value();
                 changed = true;
                 num_indices.remove(element - 1);
 
