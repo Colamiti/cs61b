@@ -140,7 +140,8 @@ public class Model extends Observable {
             Tile current = b.tile(col, row);
             System.out.println("Current Value: " + current.value() + "  Current row: "+ row);
 
-            System.out.println(b);           
+            System.out.println(b);
+            if (null_indices.isEmpty()) return changed;
             int max_null_index = Collections.max(null_indices);
             System.out.println("max null: " + max_null_index);
             if (row < max_null_index) {
