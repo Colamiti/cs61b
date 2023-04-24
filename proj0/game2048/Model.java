@@ -132,18 +132,18 @@ public class Model extends Observable {
             }
             element--;
         }
-        System.out.println(b);        
+
 
         for (int element = num_indices.size() - 1; element >= 0; element--) {
-            System.out.println(null_indices);
+
             int row = num_indices.get(element);
             Tile current = b.tile(col, row);
-            System.out.println("Current Value: " + current.value() + "  Current row: "+ row);
 
-            System.out.println(b);
+
+
             if (null_indices.isEmpty()) return changed;
             int max_null_index = Collections.max(null_indices);
-            System.out.println("max null: " + max_null_index);
+
             if (row < max_null_index) {
                 null_indices.add(row);
                 null_indices.remove(Integer.valueOf(max_null_index));
@@ -153,7 +153,7 @@ public class Model extends Observable {
 
         }
 
-        System.out.println(b);
+
         return changed;
 
     }
@@ -185,11 +185,8 @@ public class Model extends Observable {
 
 
 
-            System.out.println(col);
-            System.out.println("_____________________");
+
             if (tiltColumn(col)) changed = true;
-             System.out.println("_____________________");
-             System.out.println("_____________________");
 
         }
 
