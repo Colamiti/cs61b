@@ -84,6 +84,11 @@ public class ArrayDequeTest {
         adq1.removeFirst();
         adq1.removeFirst();
         adq1.removeFirst();
+        adq1.removeLast();
+        adq1.removeLast();
+        adq1.removeLast();adq1.removeLast();
+
+        adq1.removeLast();
         adq1.removeFirst();
         adq1.removeFirst();
         adq1.removeFirst();

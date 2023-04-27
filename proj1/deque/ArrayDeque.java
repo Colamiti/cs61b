@@ -104,7 +104,7 @@ public class ArrayDeque<T> {
     }
     public T removeFirst(){
         float usage_factor = (float) size/items.length;
-        if (usage_factor < .25){
+        if (usage_factor < .25 && items.length > 100){
             resize((int) Math.round(size *1.01+.5));
         }
         if (isEmpty()) return null;
@@ -119,7 +119,7 @@ public class ArrayDeque<T> {
      * returns deleted T. */
     public T removeLast() {
         float usage_factor = (float) size/items.length;
-        if (usage_factor < .25){
+        if (usage_factor < .25  && items.length > 100){
             resize((int) Math.round(size *1.01+.5));
         }
         if (isEmpty()) return null;
